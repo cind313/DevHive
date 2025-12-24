@@ -1,0 +1,34 @@
+﻿@model DevHive.Web.Models.ViewModels.AddTagRequest
+@{
+}
+
+<div class="bg-secondary bg-opacity-10 py-2">
+    <div class="container">
+        <h2>Add New Tag - Admin Functionality</h2>
+    </div>
+</div>
+
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm mx-auto my-4" style="max-width: 380px;">
+        <div class="card-body px-4 py-4">
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" asp-for="Name" required placeholder="e.g  aspnet-core" />
+                    <span class="text-danger" asp-validation-for="Name"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" class="form-control" id="displayName" asp-for="DisplayName" required placeholder="e.g  ASP.NET core" />
+                    <span class="text-danger" asp-validation-for="DisplayName"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
