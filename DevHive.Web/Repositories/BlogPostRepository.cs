@@ -18,7 +18,8 @@ namespace DevHive.Web.Repositories
               string? sortBy,
             string? sortDirection,
             int pageSize = 100,
-            int pageNumber = 1)
+            int pageNumber = 1,
+            string? tagName = null)
         {
             var query = devHiveDbContext.BlogPosts.Include(x => x.Tags).AsQueryable();
 
@@ -29,6 +30,13 @@ namespace DevHive.Web.Repositories
                                     x.PageTitle.Contains(searchQuery) ||
                                     x.Heading.Contains(searchQuery));  
             }
+
+            // Filter by tag
+            if (!string.IsNullOrWhiteSpace(tagName))
+            {
+                query = query.Where(bp => bp.Tags.Any(t => t.Name == tagName));
+            }
+
 
             // Sorting
             if (string.IsNullOrWhiteSpace(sortBy) == false)

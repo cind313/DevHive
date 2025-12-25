@@ -22,13 +22,19 @@ namespace DevHive.Web.Controllers
             this.tagRepository = tagRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? tag)
         {
             // getting all blogs
-            var blogPosts = await blogPostRepository.GetAllAsync();
+            var blogPosts = await blogPostRepository.GetAllAsync(
+                searchQuery: null,
+                sortBy: null,
+                sortDirection: null,
+                pageSize: 5,
+                pageNumber: 1,
+                tagName: tag);
 
             // get all tags
-            var tags = await tagRepository.GetAllAsync();
+            var tags = await tagRepository.GetAllAsync(null, null, null, 1, 100);
 
             var model = new HomeViewModel
             {
@@ -36,6 +42,7 @@ namespace DevHive.Web.Controllers
                 Tags = tags
             };
 
+            ViewBag.SelectedTag = tag;
             return View(model);
         }
 

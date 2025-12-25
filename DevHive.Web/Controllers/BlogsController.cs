@@ -82,7 +82,7 @@ namespace DevHive.Web.Controllers
                     ShortDescription = blogPost.ShortDescription,
                     UrlHandle = blogPost.UrlHandle,
                     Visible = blogPost.Visible,
-                    Tags = blogPost.Tags,
+                    Tags = blogPost.Tags?.ToList() ?? new List<Tag>(),
                     TotalLikes = totalLikes,
                     Liked = liked,
                     Comments = blogCommentsForView

@@ -9,7 +9,8 @@ namespace DevHive.Web.Repositories
               string? sortBy = null,
             string? sortDirection = null,
             int pageSize = 100,
-            int pageNumber = 1);
+            int pageNumber = 1,
+            string? tagName = null);
 
         Task<BlogPost?> GetAsync(Guid id);
 
