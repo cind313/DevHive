@@ -3,38 +3,52 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container col-xxl-8 px-5 py-5">
-    <div class="row align-items-center g-5 py-5">
-        <div class="col-12 col-lg-6">
-            <h1 class="display-5 fw-bold lh-1 mb-3">
-                DevHive - The Dev Blog
-            </h1>
-            <p class="lead">
-                Join DevHive to explore a wide range of coding topics,
-                from web fundamentals like HTML and CSS to cutting-edge areas like AI and machine learning.
-                Register now to join our community, engage with fellow developers,
-                and unlock the ability to like and comment on posts.
-            </p>
+<section class="hero-section">
+    <div class="container col-xxl-8 px-5 py-5">
+        <div class="row align-items-center g-5">
+
+            <!-- LEFT: text -->
+            <div class="col-12 col-lg-6">
+                <h1 class="display-6 fw-bold lh-1 mb-3">
+                    DevHive - Insights For Modern Developers
+                </h1>
+                <p class="lead hero-subtitle">
+                    Join DevHive to explore a wide range of coding topics,
+                    from web fundamentals like HTML and CSS to cutting-edge areas like AI and machine learning.
+                    Register now to join our community, engage with fellow developers,
+                    and unlock the ability to like and comment on posts.
+                </p>
+
+                <div class="mt-3">
+                    <a class="btn btn-dark btn-lg" asp-controller="Blogs" asp-action="Index">Start reading</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="hero-img-wrap">
+                    <img src="https://res-console.cloudinary.com/dtx49glp3/thumbnails/v1/image/upload/v1766692179/cGV4ZWxzLXBob3RvLTU3NjkwX2JmbGQydQ==/drilldown""
+                         alt="DevHive - Insights For Modern Developers"
+                         class="hero-img w-100" />
+                </div>
+            </div>
+        </div>
+</section>
+
+<hr class="section-divider" />
+
+<section class="tags-section">
+    <div class="container col-xxl-8 px-5">
+        <div class="tags-header">
+            <h2 class="section-title">Browse by topic</h2>
+            <p class="section-hint">Filter posts by a specific technology</p>
         </div>
 
-        <div class="col-12 col-lg-6">
-            <img src="https://res-console.cloudinary.com/dtx49glp3/thumbnails/v1/image/upload/v1766692179/cGV4ZWxzLXBob3RvLTU3NjkwX2JmbGQydQ==/drilldown"
-                 alt="DevHive - Dev blogs"
-                 class="d-block mx-lg-auto img-fluid hero-img" width="300" />
-        </div>
-    </div>
-</div>
-
-
-<div class="container w-100">
-    <div class="row justify-content-center ">
-        <div class="col-9 d-flex flex-wrap justify-content-center gap-2">
+        <div class="tags-row">
             @if (Model != null && Model.Tags.Any())
             {
                 foreach (var tag in Model.Tags)
                 {
-                    <a 
-                       asp-controller="Home"
+                    <a asp-controller="Home"
                        asp-action="Index"
                        asp-route-tag="@tag.Name">
                         <span class="badge bg-dark me-1">
@@ -45,47 +59,51 @@
             }
         </div>
     </div>
-</div>
-
-
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-7">
-            @if (Model != null && Model.BlogPosts.Any())
-            {
-                foreach (var blogPost in Model.BlogPosts)
-                {
-                    <div class="mb-5 bg-light box-shadow p-3">
-                        <img src="@blogPost.FeaturedImageUrl" alt="@blogPost.Heading"
-                             class="mb-2 d-block img-fluid" />
-
-                        <h2 class="mb-4">@blogPost.Heading</h2>
-                        <p class="mb-4">
-                            Author: @blogPost.Author
-                            <br />
-                            Published Date: @blogPost.PublishedDate.ToShortDateString()
-                        </p>
-
-
-                        <p class="mb-4">
-                            @foreach (var tag in blogPost.Tags)
-                            {
-                                <span class="badge bg-secondary me-1">@tag.Name</span>
-                            }
-                        </p>
-
-
-                        <p class="mb-4">@blogPost.ShortDescription</p>
-
-                        <a class="btn btn-dark"
-                           asp-area=""
-                           asp-controller="Blogs"
-                           asp-action="Index"
-                           asp-route-urlHandle="@blogPost.UrlHandle">Read More</a>
-                    </div>
-
-                }
-            }
-        </div>
     </div>
-</div>
+</section>
+
+<hr class="section-divider" />
+
+<section class="posts-section">
+    <div class="container col-xl-7 px-5 pb-5">
+        <div class="posts-header">
+            <h2 class="section-title">Latest Posts</h2>
+        </div>
+
+        @if (Model != null && Model.BlogPosts.Any())
+        {
+            foreach (var blogPost in Model.BlogPosts)
+            {
+                <div class="mb-5 blog-card p-3">
+                    <img src="@blogPost.FeaturedImageUrl" alt="@blogPost.Heading"
+                         class="blog-card-img" />
+
+                    <h2 class="mb-4">@blogPost.Heading</h2>
+                    <p class="mb-4">
+                        Author: @blogPost.Author
+                        <br />
+                        Published Date: @blogPost.PublishedDate.ToShortDateString()
+                    </p>
+
+
+                    <p class="mb-4">
+                        @foreach (var tag in blogPost.Tags)
+                        {
+                            <span class="badge bg-secondary me-1">@tag.Name</span>
+                        }
+                    </p>
+
+
+                    <p class="mb-4">@blogPost.ShortDescription</p>
+
+                    <a class="btn btn-dark"
+                       asp-area=""
+                       asp-controller="Blogs"
+                       asp-action="Index"
+                       asp-route-urlHandle="@blogPost.UrlHandle">Read More</a>
+                </div>
+
+            }
+        }
+    </div>
+</section>
