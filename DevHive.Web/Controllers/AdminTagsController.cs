@@ -119,11 +119,11 @@ namespace DevHive.Web.Controllers
 
             if (updatedTag != null)
             {
-                // Show success notification
+               
             }
             else
             {
-                // Show error notification
+               
             }
 
             return RedirectToAction("Edit", new { id = editTagRequest.Id });
