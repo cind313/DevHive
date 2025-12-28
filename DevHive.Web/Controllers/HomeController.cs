@@ -23,7 +23,7 @@ namespace DevHive.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string? tag, int pageNumber = 1, int pageSize = 1 )
+        public async Task<IActionResult> Index(string? tag, int pageNumber = 1, int pageSize = 5 )
         {
             if (pageSize < 1) pageSize = 5;
             if(pageSize > 50) pageSize = 50;

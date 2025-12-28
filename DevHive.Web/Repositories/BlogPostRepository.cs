@@ -58,8 +58,6 @@ namespace DevHive.Web.Repositories
             // Skip 0 Take 5 -> Page 1 of 5 results
             // Skip 5 Take next 5 -> Page 2 of 5 results
             var skipResults = (pageNumber - 1) * pageSize;
-            query = query.Skip(skipResults).Take(pageSize);
-
 
             return await query
                  .Skip(skipResults)
@@ -71,14 +69,7 @@ namespace DevHive.Web.Repositories
 
         public async Task<int> CountAsync(string? tagName = null)
         {
-            var query = devHiveDbContext.BlogPosts.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(tagName))
-            {
-                query = query.Where(bp => bp.Tags.Any(t => t.Name == tagName));
-            }
-
-            return await query.CountAsync();
+            return await devHiveDbContext.BlogPosts.CountAsync();
         }
 
         public async Task<BlogPost> AddAsync(BlogPost blogPost)
