@@ -22,29 +22,51 @@ namespace DevHive.Web.Controllers
             this.tagRepository = tagRepository;
         }
 
-        public async Task<IActionResult> Index(string? tag)
+        [HttpGet]
+        public async Task<IActionResult> Index(string? tag, int pageNumber = 1, int pageSize = 1 )
         {
-            // getting all blogs
-            var blogPosts = await blogPostRepository.GetAllAsync(
+            if (pageSize < 1) pageSize = 5;
+            if(pageSize > 50) pageSize = 50;
+           
+
+            // 1) Get tags
+            var allTags = await tagRepository.GetAllAsync();
+
+            // 2) Count posts 
+            var totalPosts = await blogPostRepository.CountAsync(tag);
+
+            // 3) Total pages
+            var totalPages = (int)Math.Ceiling((double)totalPosts / pageSize);
+            if (totalPages < 1) totalPages = 1;
+
+            // 4) so it never points to an empty page
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageNumber > totalPages) pageNumber = totalPages;
+
+            // 5) Get posts for this page 
+            var posts = await blogPostRepository.GetAllAsync(
                 searchQuery: null,
                 sortBy: null,
                 sortDirection: null,
-                pageSize: 5,
-                pageNumber: 1,
-                tagName: tag);
+                pageSize: pageSize,
+                pageNumber: pageNumber,
+                tagName: tag
+            );
 
-            // get all tags
-            var tags = await tagRepository.GetAllAsync(null, null, null, 1, 100);
-
-            var model = new HomeViewModel
+            var vm = new HomeViewModel
             {
-                BlogPosts = blogPosts,
-                Tags = tags
+                Tags = allTags,
+                BlogPosts = posts,
+                  PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+
+                SelectedTag = tag
             };
 
-            ViewBag.SelectedTag = tag;
-            return View(model);
+            return View(vm);
         }
+
 
         public IActionResult Privacy()
         {

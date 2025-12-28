@@ -14,14 +14,17 @@ namespace DevHive.Web.Repositories
         }
 
         public async Task<IEnumerable<BlogPost>> GetAllAsync(
-            string? searchQuery,
-              string? sortBy,
-            string? sortDirection,
-            int pageSize = 100,
+           string? searchQuery = null,
+            string? sortBy = null,
+            string? sortDirection = null,
+            int pageSize = 5,
             int pageNumber = 1,
             string? tagName = null)
         {
-            var query = devHiveDbContext.BlogPosts.Include(x => x.Tags).AsQueryable();
+            var query = devHiveDbContext.BlogPosts
+                .Include(x => x.Tags)
+                .AsQueryable();
+
 
             // Filtering
             if (!string.IsNullOrWhiteSpace(searchQuery))
@@ -37,6 +40,7 @@ namespace DevHive.Web.Repositories
                 query = query.Where(bp => bp.Tags.Any(t => t.Name == tagName));
             }
 
+            query = query.OrderByDescending(x => x.PublishedDate);
 
             // Sorting
             if (string.IsNullOrWhiteSpace(sortBy) == false)
@@ -57,10 +61,24 @@ namespace DevHive.Web.Repositories
             query = query.Skip(skipResults).Take(pageSize);
 
 
-            return await query.ToListAsync();
-            //return await devHiveDbContext.Tags.ToListAsync();
-
+            return await query
+                 .Skip(skipResults)
+                 .Take(pageSize)
+                 .ToListAsync();
+ 
             // return await devHiveDbContext.BlogPosts.Include(x => x.Tags).ToListAsync();
+        }
+
+        public async Task<int> CountAsync(string? tagName = null)
+        {
+            var query = devHiveDbContext.BlogPosts.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(tagName))
+            {
+                query = query.Where(bp => bp.Tags.Any(t => t.Name == tagName));
+            }
+
+            return await query.CountAsync();
         }
 
         public async Task<BlogPost> AddAsync(BlogPost blogPost)
@@ -122,9 +140,5 @@ namespace DevHive.Web.Repositories
             return null;
         }
 
-        public async Task<int> CountAsync()
-        {
-            return await devHiveDbContext.BlogPosts.CountAsync();
-        }
     }
 }

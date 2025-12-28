@@ -1,6 +1,7 @@
 ﻿@model DevHive.Web.Models.ViewModels.LoginViewModel
 
 @{
+    ViewData["Title"] = "Login";
 }
 
 
@@ -13,18 +14,26 @@
                     Login
                 </h3>
 
-                <form method="post">
+                <form asp-controller="Account" asp-action="Login" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    @* Show validation only after a failed post *@
+                    @if(ViewContext.HttpContext.Request.Method == "POST" && !ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    }
                     <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" id="username" class="form-control" asp-for="Username" required />
+                        <label class="form-label" asp-for="Username">Username</label>
+                        <input type="text" id="username" class="form-control" asp-for="Username" autocomplete="username" />
                         <span class="text-danger" asp-validation-for="Username"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="password" class="form-control" asp-for="Password" required minlength="6" />
+                        <label class="form-label" asp-for="Password">Password</label>
+                        <input type="password" id="password" class="form-control" asp-for="Password" autocomplete="current-password" />
                         <span class="text-danger" asp-validation-for="Password"></span>
                     </div>
+                    
+                    <input type="hidden" asp-for="ReturnUrl"/>
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-dark">Log in</button>
@@ -32,6 +41,10 @@
 
                     <input type="hidden" asp-for="ReturnUrl" />
                 </form>
+
+                @section Scripts{
+                    <partial name="_ValidationScriptsPartial"/>
+                }
             </div>
         </div>
     </div>

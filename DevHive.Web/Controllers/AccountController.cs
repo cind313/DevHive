@@ -1,4 +1,4 @@
-﻿ using DevHive.Web.Models.ViewModels;
+﻿using DevHive.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,62 +25,76 @@ namespace DevHive.Web.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var identityUser = new IdentityUser
-                {
-                    UserName = registerViewModel.Username,
-                    Email = registerViewModel.Email
-                };
-
-                var identityResult = await userManager.CreateAsync(identityUser, registerViewModel.Password);
-
-                if (identityResult.Succeeded)
-                {
-                    // assign this user the "User" role
-                    var roleIdentityResult = await userManager.AddToRoleAsync(identityUser, "User");
-
-                    if (roleIdentityResult.Succeeded)
-                    {
-                        // Show success notification
-                        return RedirectToAction("Register");
-                    }
-                }
+                return View(registerViewModel);
             }
 
-            // Show error notification
-            return View();
+            var identityUser = new IdentityUser
+            {
+                UserName = registerViewModel.Username,
+                Email = registerViewModel.Email
+            };
+
+            var identityResult = await userManager.CreateAsync(identityUser, registerViewModel.Password);
+
+            if (identityResult.Succeeded)
+            {
+                // assign this user the "User" role
+                var roleResult = await userManager.AddToRoleAsync(identityUser, "User");
+
+                if (roleResult.Succeeded)
+                {
+                    // Show success notification
+                    return RedirectToAction("Login");
+                }
+                
+                foreach(var error in roleResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(registerViewModel);
+            }
+
+            foreach(var error in identityResult.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(registerViewModel);
         }
 
 
         [HttpGet]
-        public IActionResult Login(string ReturnUrl)
+        public IActionResult Login(string? ReturnUrl = null)
         {
-            var model = new LoginViewModel
+            return View(new LoginViewModel
             {
-                ReturnUrl = ReturnUrl
-            };
-
-            return View(model);
+                ReturnUrl = ReturnUrl ?? "/"
+            });
         }
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(loginViewModel);
             }
 
             var signInResult = await signInManager.PasswordSignInAsync(loginViewModel.Username,
-                loginViewModel.Password, false, false);
+                loginViewModel.Password, isPersistent: false, lockoutOnFailure: false);
 
-            if (signInResult != null && signInResult.Succeeded)
+            if (signInResult.Succeeded)
             {
-                if (!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                if ((!string.IsNullOrWhiteSpace(loginViewModel.ReturnUrl))
+                    && Url.IsLocalUrl(loginViewModel.ReturnUrl))
                 {
                     return Redirect(loginViewModel.ReturnUrl);
                 }
@@ -89,7 +103,8 @@ namespace DevHive.Web.Controllers
             }
 
             // Show errors
-            return View();
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(loginViewModel);
         }
 
         [HttpGet]

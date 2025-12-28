@@ -1,6 +1,8 @@
 ﻿@model DevHive.Web.Models.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
+  /*  int nextPage = Convert.ToInt32(ViewBag.PageNumber) + 1;
+    int prevPage = Convert.ToInt32(ViewBag.PageNumber) - 1;*/
 }
 
 <section class="hero-section">
@@ -18,9 +20,6 @@
                     Register now to join our community, engage with fellow developers,
                     and unlock the ability to like and comment on posts.
                 </p>
-                <div class="mt-4">
-                    <a class="btn btn-dark btn-lg" asp-controller="Blogs" asp-action="Index">Start reading</a>
-                </div>
             </div>
 
             <div class="col-12 col-lg-6">
@@ -31,6 +30,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </section>
 
 <hr class="section-divider" />
@@ -38,27 +38,35 @@
 <section class="tags-section">
     <div class="container px-5">
         <div class="container col-xxl-8 px-5 tags-box">
-        <div class="tags-header">
-            <h2 class="section-title">Browse by topic</h2>
-            <p class="section-hint">Filter posts by a specific technology</p>
-        </div>
+            <div class="tags-header">
+                <h2 class="section-title">Browse by topic</h2>
+                <p class="section-hint">Filter posts by a specific technology</p>
+            </div>
 
-        <div class="tags-row">
-            @if (Model != null && Model.Tags.Any())
-            {
-                foreach (var tag in Model.Tags)
-                {
-                    <a asp-controller="Home"
-                       asp-action="Index"
-                       asp-route-tag="@tag.Name">
-                        <span class="badge bg-dark me-1">
-                            @tag.DisplayName
-                        </span>
-                    </a>
-                }
-            }
+            <section id="tagsSection">
+                <div class="tags-row">
+                    @if (Model.Tags != null && Model.Tags.Any())
+                    {
+                        <div class="tags-row">
+                            @foreach (var tag in Model.Tags)
+                            {
+                                <a class="badge bg-dark text-white me-2 mb-2"
+                                   asp-controller="Home"
+                                   asp-action="Index"
+                                   asp-route-tag="@tag.Name"
+                                   asp-route-pageNumber="1"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-fragment="posts">
+                                    @tag.Name
+                                </a>
+                            }
+                        </div>
+                    }
+
+                    <hr />
+                </div>
+            </section>
         </div>
-    </div>
     </div>
 </section>
 
@@ -67,10 +75,10 @@
 <section class="posts-section">
     <div class="container col-xl-7 px-5 pb-5">
         <div class="posts-header">
-            <h1 class="section-title">Latest Posts</h1>
+            <h1 class="section-title" id="posts">Latest Posts</h1>
         </div>
 
-        @if (Model != null && Model.BlogPosts.Any())
+        @if (Model.BlogPosts != null && Model.BlogPosts.Any())
         {
             foreach (var blogPost in Model.BlogPosts)
             {
@@ -86,13 +94,15 @@
                     </p>
 
 
-                    <p class="mb-4">
-                        @foreach (var tag in blogPost.Tags)
-                        {
-                            <span class="badge bg-secondary me-1">@tag.Name</span>
-                        }
-                    </p>
-
+                    @if (blogPost.Tags != null && blogPost.Tags.Any())
+                    {
+                        <p class="mb-4">
+                            @foreach (var tag in blogPost.Tags)
+                            {
+                                <span class="badge bg-secondary me-1">@tag.Name</span>
+                            }
+                        </p>
+                    }
 
                     <p class="mb-4">@blogPost.ShortDescription</p>
 
@@ -104,6 +114,61 @@
                 </div>
 
             }
+        }
+        else
+        {
+            <p>No posts found.</p>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            var prevPage = Model.PageNumber - 1;
+            var nextPage = Model.PageNumber + 1;
+
+            <nav aria-label="Posts pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+
+                    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-route-tag="@Model.SelectedTag"
+                           asp-route-pageNumber="@prevPage"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-fragment="posts">
+                            Previous
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link"
+                               asp-controller="Home"
+                               asp-action="Index"
+                               asp-route-tag="@Model.SelectedTag"
+                               asp-route-pageNumber="@i"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-fragment="posts">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-route-tag="@Model.SelectedTag"
+                           asp-route-pageNumber="@nextPage"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-fragment="posts">
+                            Next
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
         }
     </div>
 </section>

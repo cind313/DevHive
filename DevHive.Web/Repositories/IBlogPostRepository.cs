@@ -8,9 +8,11 @@ namespace DevHive.Web.Repositories
             string? searchQuery = null,
               string? sortBy = null,
             string? sortDirection = null,
-            int pageSize = 100,
+            int pageSize = 5,
             int pageNumber = 1,
             string? tagName = null);
+
+        Task<int> CountAsync(string? tagName = null);
 
         Task<BlogPost?> GetAsync(Guid id);
 
@@ -22,6 +24,5 @@ namespace DevHive.Web.Repositories
 
         Task<BlogPost?> DeleteAsync(Guid id);
 
-        Task<int> CountAsync();
     }
 }

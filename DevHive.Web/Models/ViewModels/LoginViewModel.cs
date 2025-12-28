@@ -8,8 +8,8 @@ namespace DevHive.Web.Models.ViewModels
         public string Username { get; set; }
 
         [Required]
-        [MinLength(6, ErrorMessage = "Password has to be at least 6 characters")]
-        public string Password { get; set; }
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = string.Empty;
 
         public string? ReturnUrl { get; set; }
     }
