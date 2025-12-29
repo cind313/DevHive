@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevHive.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Superadmin")]
     public class AdminTagsController : Controller
     {
         private readonly ITagRepository tagRepository;

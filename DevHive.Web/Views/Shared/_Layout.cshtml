@@ -30,7 +30,7 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -73,14 +73,17 @@
                                         </a>
                                     </li>
 
-                                    <li>
-                                        <a class="dropdown-item"
-                                           asp-area=""
-                                           asp-controller="AdminUsers"
-                                           asp-action="List">
-                                            All Users
-                                        </a>
-                                    </li>
+                                    @if (User.IsInRole("SuperAdmin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item"
+                                               asp-area=""
+                                               asp-controller="AdminUsers"
+                                               asp-action="List">
+                                                All Users
+                                            </a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                         }
@@ -93,7 +96,7 @@
                         {
                             <div class="dropdown">
                                 <button class="btn bg-light text-dark dropdown-toggle me-3" type="button" data-bs-toggle="dropdown">
-                                   Hello, @User?.Identity?.Name
+                                    Hello, @User?.Identity?.Name
                                 </button>
 
                                 <ul class="dropdown-menu dropdown-menu-end">

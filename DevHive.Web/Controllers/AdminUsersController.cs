@@ -6,7 +6,7 @@ using DevHive.Web.Repositories;
 
 namespace DevHive.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class AdminUsersController : Controller
     {
         private readonly IUserRepository userRepository;
