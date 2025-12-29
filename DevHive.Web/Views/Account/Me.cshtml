@@ -1,0 +1,55 @@
+﻿@model DevHive.Web.Models.ViewModels.MyAccountViewModel
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<div class="container col-lg-7 py-4">
+
+    <h1 class="mb-4">My Account</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Profile</h5>
+
+            <p class="mb-1"><b>Username:</b> @Model.UserName</p>
+            <p class="mb-1"><b>Email:</b> @Model.Email</p>
+            <p class="mb-0"><b>Roles:</b> @(Model.Roles.Any() ? string.Join(", ", Model.Roles) : "—")</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Change Password</h5>
+
+            <form asp-action="Me" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Current password</label>
+                    <input class="form-control" type="password" asp-for="CurrentPassword" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">New password</label>
+                    <input class="form-control" type="password" asp-for="NewPassword" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirm new password</label>
+                    <input class="form-control" type="password" asp-for="ConfirmNewPassword" />
+                </div>
+
+                <button class="btn btn-dark" type="submit">Update Password</button>
+                <a class="btn btn-outline-danger ms-2" asp-controller="Account" asp-action="Logout">Log out</a>
+            </form>
+        </div>
+    </div>
+
+</div>

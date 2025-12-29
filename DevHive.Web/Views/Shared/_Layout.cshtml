@@ -92,8 +92,8 @@
                         @if (signInManager.IsSignedIn(User))
                         {
                             <div class="dropdown">
-                                <button class="btn bg-light text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    @User?.Identity?.Name
+                                <button class="btn bg-light text-dark dropdown-toggle me-3" type="button" data-bs-toggle="dropdown">
+                                   Hello, @User?.Identity?.Name
                                 </button>
 
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -111,12 +111,6 @@
                                            asp-action="Logout">Log out</a>
                                     </li>
                                 </ul>
-                                <a class="btn me-3 bg-light text-dark"
-                                asp-area=""
-                                asp-controller="Account"
-                                asp-action="Logout">
-                                Log out
-                               </a>
                             </div>
                         }
 
