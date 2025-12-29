@@ -5,6 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cloudName = builder.Configuration["Cloudinary:CloudName"];
+var apiKey = builder.Configuration["Cloudinary:ApiKey"];
+var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+Console.WriteLine($"Cloudinary loaded? {(!string.IsNullOrWhiteSpace(cloudName))}");
+
+if (string.IsNullOrWhiteSpace(cloudName) ||
+    string.IsNullOrWhiteSpace(apiKey) ||
+    string.IsNullOrWhiteSpace(apiSecret))
+{
+    throw new Exception("Cloudinary settings are missing. Check User Secrets (secrets.json).");
+}
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

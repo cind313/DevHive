@@ -69,7 +69,13 @@ namespace DevHive.Web.Repositories
 
         public async Task<int> CountAsync(string? tagName = null)
         {
-            return await devHiveDbContext.BlogPosts.CountAsync();
+            var query= devHiveDbContext.BlogPosts.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(tagName))
+            {
+                query=query.Where(bp => bp.Tags.Any( x => x.Name == tagName));
+            }
+
+            return await query.CountAsync();
         }
 
         public async Task<BlogPost> AddAsync(BlogPost blogPost)

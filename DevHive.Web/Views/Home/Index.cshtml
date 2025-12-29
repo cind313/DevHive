@@ -1,8 +1,8 @@
 ﻿@model DevHive.Web.Models.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
-  /*  int nextPage = Convert.ToInt32(ViewBag.PageNumber) + 1;
-    int prevPage = Convert.ToInt32(ViewBag.PageNumber) - 1;*/
+    int prevPage = Model.PageNumber - 1;
+    int nextPage = Model.PageNumber + 1;
 }
 
 <section class="hero-section">
@@ -120,10 +120,10 @@
             <p>No posts found.</p>
         }
 
-        @if (Model.TotalPages > 1)
+        @if (Model.TotalPages >= 1)
         {
-            var prevPage = Model.PageNumber - 1;
-            var nextPage = Model.PageNumber + 1;
+            prevPage = Model.PageNumber - 1;
+            nextPage = Model.PageNumber + 1;
 
             <nav aria-label="Posts pagination" class="mt-4">
                 <ul class="pagination justify-content-center">
@@ -140,18 +140,28 @@
                         </a>
                     </li>
 
-                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    @if (Model.TotalPages > 1)
                     {
-                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                            <a class="page-link"
-                               asp-controller="Home"
-                               asp-action="Index"
-                               asp-route-tag="@Model.SelectedTag"
-                               asp-route-pageNumber="@i"
-                               asp-route-pageSize="@Model.PageSize"
-                               asp-fragment="posts">
-                                @i
-                            </a>
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                <a class="page-link"
+                                   asp-controller="Home"
+                                   asp-action="Index"
+                                   asp-route-tag="@Model.SelectedTag"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-fragment="posts">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        //for only one page pag
+                        <li class="page-item active">
+                            <span class="page-link">1</span>
                         </li>
                     }
 
