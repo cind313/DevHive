@@ -1,6 +1,6 @@
 
-requirnments:
--Vsual studio 2022
+requirements:
+-Visual studio 2022
 
 -.NET SDK 8.0 (TargetFramework:
 net8.0)

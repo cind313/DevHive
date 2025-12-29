@@ -91,23 +91,45 @@
 
                         @if (signInManager.IsSignedIn(User))
                         {
-                            <div class="me-3 text-light">
-                                @User?.Identity?.Name
-                            </div>
+                            <div class="dropdown">
+                                <button class="btn bg-light text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    @User?.Identity?.Name
+                                </button>
 
-                            <a class="btn me-3 bg-light text-dark"
-                               asp-area=""
-                               asp-controller="Account"
-                               asp-action="Logout">Log out</a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area=""
+                                           asp-controller="Account"
+                                           asp-action="Me">My Account</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           asp-area=""
+                                           asp-controller="Account"
+                                           asp-action="Logout">Log out</a>
+                                    </li>
+                                </ul>
+                                <a class="btn me-3 bg-light text-dark"
+                                asp-area=""
+                                asp-controller="Account"
+                                asp-action="Logout">
+                                Log out
+                               </a>
+                            </div>
                         }
+
                         else
                         {
                             <a class="btn me-3 bg-light text-dark"
                                asp-area=""
                                asp-controller="Account"
-                               asp-action="Login"><i class="bi bi-person-circle"></i>
-                               Log in</a>
-                            
+                               asp-action="Login">
+                                <i class="bi bi-person-circle"></i>
+                                Log in
+                            </a>
+
 
                             <a class="btn me-3 bg-light text-dark"
                                asp-area=""
@@ -130,7 +152,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - DevHive.Web - <a asp-area="" asp-controller="Home" asp-action="Pri vacy">Privacy</a>
+            &copy; 2025 - DevHive.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
