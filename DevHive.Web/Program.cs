@@ -2,22 +2,9 @@ using DevHive.Web.Data;
 using DevHive.Web.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var cloudName = builder.Configuration["Cloudinary:CloudName"];
-var apiKey = builder.Configuration["Cloudinary:ApiKey"];
-var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
-
-Console.WriteLine($"Cloudinary loaded? {(!string.IsNullOrWhiteSpace(cloudName))}");
-
-if (string.IsNullOrWhiteSpace(cloudName) ||
-    string.IsNullOrWhiteSpace(apiKey) ||
-    string.IsNullOrWhiteSpace(apiSecret))
-{
-    throw new Exception("Cloudinary settings are missing. Check User Secrets (secrets.json).");
-}
-
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -47,6 +34,24 @@ builder.Services.AddScoped<IImageRepository, CloudinaryImageRepository>();
 builder.Services.AddScoped<IBlogPostLikeRepository, BlogPostLikeRepository>();
 builder.Services.AddScoped<IBlogPostCommentRepository, BlogPostCommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IImageRepository>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    var cloudName = config["Cloudinary:CloudName"];
+    var apiKey = config["Cloudinary:ApiKey"];
+    var apiSecret = config["Cloudinary:ApiSecret"];
+
+    var hasCloudinary =
+        !string.IsNullOrWhiteSpace(cloudName) &&
+        !string.IsNullOrWhiteSpace(apiKey) &&
+        !string.IsNullOrWhiteSpace(apiSecret);
+
+    return hasCloudinary
+        ? new CloudinaryImageRepository(config)   // ????? ?????? ??-Configuration (User Secrets)
+        : new NullImageRepository();              // ?? ???? ?????? ??? ????????? ????
+});
 
 
 var app = builder.Build();
