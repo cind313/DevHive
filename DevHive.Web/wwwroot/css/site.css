@@ -87,6 +87,26 @@ body {
     }
 
 
+    /*Auth pages (Login\Register)*/
+    .auth-wrapper{
+        display:flex;
+        justify-content:center;
+        padding:1rem;
+    }
+    .auth-card{
+        width:100%;
+        max-width:380px;
+    }
+
+    @media(min-width:768px){
+        .auth-card{
+            max-width:380px;
+        }
+    }
+
+
+
+
 
 /* ===== Sections layout ===== */
 .section-divider {

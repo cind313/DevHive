@@ -91,7 +91,7 @@
                                 {
                                     @foreach (var comment in Model.Comments)
                                     {
-                                        <div class="card mb-3">
+                                        <div id="comment-@comment.Id" class="card mb-3">
                                             <div class="card-body">
                                                 <div>
                                                     @comment.Description

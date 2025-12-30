@@ -4,6 +4,7 @@ using DevHive.Web.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 
 namespace DevHive.Web.Controllers
@@ -75,7 +76,7 @@ namespace DevHive.Web.Controllers
 
                     blogCommentsForView.Add(new BlogComment
                     {
-                        Id = blogComment.Id,                 
+                        Id = blogComment.Id,
                         Description = blogComment.Description,
                         DateAdded = blogComment.DateAdded,
                         Username = name
@@ -102,7 +103,7 @@ namespace DevHive.Web.Controllers
                 };
 
             }
-            
+
             return View(blogDetailsViewModel);
         }
 
@@ -110,23 +111,44 @@ namespace DevHive.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(BlogDetailsViewModel blogDetailsViewModel)
         {
-            if (signInManager.IsSignedIn(User))
+            if (!signInManager.IsSignedIn(User))
             {
-                var domainModel = new BlogPostComment
-                {
-                    BlogPostId = blogDetailsViewModel.Id,
-                    Description = blogDetailsViewModel.CommentDescription,
-                    UserId = Guid.Parse(userManager.GetUserId(User)),
-                    DateAdded = DateTime.Now
-                };
-
-                await blogPostCommentRepository.AddAsync(domainModel);
-                var redirectUrl = Url.Action("Index", "Blogs", new { urlHandle = blogDetailsViewModel.UrlHandle }) + "#comments";
-                return Redirect(redirectUrl);
+                return RedirectToAction("Login", "Account");
             }
 
-            return View();
+            var blogPost = await blogPostRepository.GetAsync(blogDetailsViewModel.Id);
+
+            if (blogPost == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Basic validation: don't allow empty comments
+            if (string.IsNullOrWhiteSpace(blogDetailsViewModel.CommentDescription))
+            {
+                // Reload same page, keep user at the comments section
+                var backUrl = Url.Action("Index", "Blogs", new { urlHandle = blogDetailsViewModel.UrlHandle });
+                return Redirect($"{backUrl}#comments");
+            }
+
+            // Get logged in user's id
+            var userId = userManager.GetUserId(User);
+
+            var blogComment = new BlogPostComment
+            {
+                BlogPostId = blogPost.Id,
+                Description = blogDetailsViewModel.CommentDescription.Trim(),
+                DateAdded = DateTime.UtcNow,
+                UserId = Guid.Parse(userId!)
+            };
+
+            var createdComment = await blogPostCommentRepository.AddAsync(blogComment);
+
+            // Redirect back to the exact comment (prevents jumping to top)
+            var redirectUrl = Url.Action("Index", "Blogs", new { urlHandle = blogDetailsViewModel.UrlHandle });
+            return Redirect($"{redirectUrl}#comment-{createdComment.Id}");
         }
+
 
 
         [Authorize(Roles = "Admin,SuperAdmin")]

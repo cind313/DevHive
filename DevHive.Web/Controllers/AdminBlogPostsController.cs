@@ -4,6 +4,8 @@ using DevHive.Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
 
 namespace DevHive.Web.Controllers
 {
@@ -13,7 +15,7 @@ namespace DevHive.Web.Controllers
         private readonly ITagRepository tagRepository;
         private readonly IBlogPostRepository blogPostRepository;
 
-        public AdminBlogPostsController(ITagRepository tagRepository ,IBlogPostRepository blogPostRepository)
+        public AdminBlogPostsController(ITagRepository tagRepository, IBlogPostRepository blogPostRepository)
         {
             this.tagRepository = tagRepository;
             this.blogPostRepository = blogPostRepository;
@@ -36,9 +38,23 @@ namespace DevHive.Web.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddBlogPostRequest addBlogPostRequest)
         {
-            
+            // Server-side validation: if required fields missing, do NOT throw an error page.
+            // Reload tags and return the same view with validation messages.
+            if (!ModelState.IsValid)
+            {
+                var tags = await tagRepository.GetAllAsync();
+                addBlogPostRequest.Tags = tags.Select(t => new SelectListItem
+                {
+                    Text = t.DisplayName,
+                    Value = t.Id.ToString()
+                });
+
+                return View(addBlogPostRequest);
+            }
+
             // Map view model to domain model
             var blogPost = new BlogPost
             {
@@ -48,32 +64,35 @@ namespace DevHive.Web.Controllers
                 ShortDescription = addBlogPostRequest.ShortDescription,
                 FeaturedImageUrl = addBlogPostRequest.FeaturedImageUrl,
                 UrlHandle = addBlogPostRequest.UrlHandle,
-                PublishedDate = DateTime.Now,
+
+                // Always set current date (no manual editing)
+                PublishedDate = DateTime.UtcNow,
+
                 Author = addBlogPostRequest.Author,
                 Visible = addBlogPostRequest.Visible,
             };
 
-            // Map Tags from selected tags
+            // Map tags from selected tags (safe even if empty)
             var selectedTags = new List<Tag>();
-            foreach (var selectedTagId in addBlogPostRequest.SelectedTags)
+            foreach (var selectedTagId in addBlogPostRequest.SelectedTags ?? Array.Empty<string>())
             {
-                var selectedTagIdAsGuid = Guid.Parse(selectedTagId);
-                var existingTag = await tagRepository.GetAsync(selectedTagIdAsGuid);
-
-                if (existingTag != null)
+                if (Guid.TryParse(selectedTagId, out var tagGuid))
                 {
-                    selectedTags.Add(existingTag);
+                    var existingTag = await tagRepository.GetAsync(tagGuid);
+                    if (existingTag != null)
+                    {
+                        selectedTags.Add(existingTag);
+                    }
                 }
             }
 
-            // Mapping tags back to domain model
             blogPost.Tags = selectedTags;
-
 
             await blogPostRepository.AddAsync(blogPost);
 
-            return RedirectToAction("Add");
+            return RedirectToAction("List");
         }
+
 
 
         [HttpGet]

@@ -4,23 +4,21 @@
     ViewData["Title"] = "Login";
 }
 
-
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="card border-1 shadow-sm mx-auto my-4" style="max-width: 380px;">
+<div class="container py-5">
+    <div class="auth-wrapper">
+        <div class="card shadow-sm auth-card">
             <div class="card-body px-4 py-4">
-
-                <h3 class="text-center mb-4">
-                    Login
-                </h3>
+                <h3 class="text-center mb-4">Login</h3>
 
                 <form asp-controller="Account" asp-action="Login" method="post" novalidate>
                     @Html.AntiForgeryToken()
+
                     @* Show validation only after a failed post *@
-                    @if(ViewContext.HttpContext.Request.Method == "POST" && !ViewData.ModelState.IsValid)
+                    @if (ViewContext.HttpContext.Request.Method == "POST" && !ViewData.ModelState.IsValid)
                     {
                         <div asp-validation-summary="All" class="text-danger mb-3"></div>
                     }
+
                     <div class="mb-3">
                         <label class="form-label" asp-for="Username">Username</label>
                         <input type="text" id="username" class="form-control" asp-for="Username" autocomplete="username" />
@@ -32,20 +30,18 @@
                         <input type="password" id="password" class="form-control" asp-for="Password" autocomplete="current-password" />
                         <span class="text-danger" asp-validation-for="Password"></span>
                     </div>
-                    
-                    <input type="hidden" asp-for="ReturnUrl"/>
-
-                    <div class="mb-3">
-                        <button type="submit" class="btn btn-dark">Log in</button>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-dark px-4 mt-4">Log in</button>
                     </div>
-
-                    <input type="hidden" asp-for="ReturnUrl" />
                 </form>
 
-                @section Scripts{
-                    <partial name="_ValidationScriptsPartial"/>
-                }
             </div>
         </div>
     </div>
 </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
