@@ -1,12 +1,10 @@
-﻿using DevHive.Web.Models.Domain;
-using DevHive.Web.Data;
+﻿using DevHive.Web.Data;
+using DevHive.Web.Models.Domain;
 using Microsoft.EntityFrameworkCore;
-
-
 
 namespace DevHive.Web.Repositories
 {
-    public class BlogPostCommentRepository: IBlogPostCommentRepository
+    public class BlogPostCommentRepository : IBlogPostCommentRepository
     {
         private readonly DevHiveDbContext devHiveDbContext;
 
@@ -24,23 +22,24 @@ namespace DevHive.Web.Repositories
 
         public async Task<IEnumerable<BlogPostComment>> GetCommentsByBlogIdAsync(Guid blogPostId)
         {
-            return await devHiveDbContext.BlogPostComment.Where(x => x.BlogPostId == blogPostId)
+            return await devHiveDbContext.BlogPostComment
+                .Where(x => x.BlogPostId == blogPostId)
                 .ToListAsync();
         }
 
-        public async Task<BlogPostComment?> DeleteAsync(Guid id)
+        public async Task<BlogPostComment?> GetAsync(Guid id)
         {
-            var existing = await devHiveDbContext.BlogPostComment.FindAsync(id);
-
-            if (existing == null)
-            {
-                return null;
-            }
-
-            devHiveDbContext.BlogPostComment.Remove(existing);
-            await devHiveDbContext.SaveChangesAsync();
-            return existing;
+            return await devHiveDbContext.BlogPostComment.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task DeleteAsync(Guid id)
+        {
+            var comment = await devHiveDbContext.BlogPostComment.FindAsync(id);
+            if (comment != null)
+            {
+                devHiveDbContext.BlogPostComment.Remove(comment);
+                await devHiveDbContext.SaveChangesAsync();
+            }
+        }
     }
 }

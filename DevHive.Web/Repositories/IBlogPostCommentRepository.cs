@@ -5,8 +5,8 @@ namespace DevHive.Web.Repositories
     public interface IBlogPostCommentRepository
     {
         Task<BlogPostComment> AddAsync(BlogPostComment blogPostComment);
-
         Task<IEnumerable<BlogPostComment>> GetCommentsByBlogIdAsync(Guid blogPostId);
-        Task<BlogPostComment?> DeleteAsync(Guid Id);
+        Task<BlogPostComment?> GetAsync(Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

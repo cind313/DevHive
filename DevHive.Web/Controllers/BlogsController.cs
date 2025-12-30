@@ -79,7 +79,8 @@ namespace DevHive.Web.Controllers
                         Id = blogComment.Id,
                         Description = blogComment.Description,
                         DateAdded = blogComment.DateAdded,
-                        Username = name
+                        Username = name,
+                        UserId = blogComment.UserId
                     });
                 }
 
@@ -151,19 +152,39 @@ namespace DevHive.Web.Controllers
 
 
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteComment(Guid commentId, string urlHandle)
         {
+            var comment = await blogPostCommentRepository.GetAsync(commentId);
+
+            // If comment doesn't exist, just go back to the post
+            if (comment == null)
+            {
+                var notFoundRedirect = Url.Action("Index", "Blogs", new { urlHandle }) + "#comments";
+                return Redirect(notFoundRedirect);
+            }
+
+            var currentUserId = userManager.GetUserId(User);
+            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+
+            // Regular users can delete ONLY their own comments
+            if (!isAdmin)
+            {
+                if (string.IsNullOrWhiteSpace(currentUserId)
+                    || !Guid.TryParse(currentUserId, out var currentUserGuid)
+                    || comment.UserId != currentUserGuid)
+                {
+                    return Forbid();
+                }
+            }
+
             await blogPostCommentRepository.DeleteAsync(commentId);
 
             var redirectUrl = Url.Action("Index", "Blogs", new { urlHandle }) + "#comments";
             return Redirect(redirectUrl);
-
         }
-
-
 
     }
 }

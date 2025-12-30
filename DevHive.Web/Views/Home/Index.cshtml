@@ -53,11 +53,11 @@
                                 <a class="badge bg-dark text-white me-2 mb-2"
                                    asp-controller="Home"
                                    asp-action="Index"
-                                   asp-route-tag="@tag.Name"
+                                   asp-route-tag="@tag.DisplayName"
                                    asp-route-pageNumber="1"
                                    asp-route-pageSize="@Model.PageSize"
                                    asp-fragment="posts">
-                                    @tag.Name
+                                    @tag.DisplayName
                                 </a>
                             }
                         </div>
