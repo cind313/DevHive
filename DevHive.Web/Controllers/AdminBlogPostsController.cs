@@ -38,6 +38,7 @@ namespace DevHive.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddBlogPostRequest addBlogPostRequest)
         {
+            
             // Map view model to domain model
             var blogPost = new BlogPost
             {
@@ -47,7 +48,7 @@ namespace DevHive.Web.Controllers
                 ShortDescription = addBlogPostRequest.ShortDescription,
                 FeaturedImageUrl = addBlogPostRequest.FeaturedImageUrl,
                 UrlHandle = addBlogPostRequest.UrlHandle,
-                PublishedDate = addBlogPostRequest.PublishedDate,
+                PublishedDate = DateTime.Now,
                 Author = addBlogPostRequest.Author,
                 Visible = addBlogPostRequest.Visible,
             };

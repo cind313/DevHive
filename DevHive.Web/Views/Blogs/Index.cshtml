@@ -92,14 +92,29 @@
                                     @foreach (var comment in Model.Comments)
                                     {
                                         <div class="card mb-3">
-                                            <div class="card-body">
+                                            <div id="comments" class="card-body">
                                                 <div>
                                                     @comment.Description
                                                 </div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span class="text-secondary">@comment.Username</span>
+                                                    <span class="text-secondary mb-3">@comment.Username</span>
                                                     <span class="text-secondary">@comment.DateAdded.ToShortDateString()</span>
                                                 </div>
+
+                                                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                                                {
+                                                    <form asp-controller="Blogs"
+                                                          asp-action="DeleteComment"
+                                                          method="post"
+                                                          class="ms-2">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                                        <input type="hidden" name="urlHandle" value="@Model.UrlHandle" />
+                                                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                }
                                             </div>
                                         </div>
                                     }

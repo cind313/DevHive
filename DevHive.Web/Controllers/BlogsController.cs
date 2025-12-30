@@ -3,6 +3,8 @@ using DevHive.Web.Models.ViewModels;
 using DevHive.Web.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace DevHive.Web.Controllers
 {
@@ -62,13 +64,24 @@ namespace DevHive.Web.Controllers
 
                 foreach (var blogComment in blogCommentsDomainModel)
                 {
+                    var identityUser = await userManager.FindByIdAsync(blogComment.UserId.ToString());
+                    var name = identityUser?.UserName ?? "Unknown";
+
+                    // אם השם הוא אימייל – תציג רק את החלק לפני @
+                    if (name.Contains("@"))
+                    {
+                        name = name.Split('@')[0];
+                    }
+
                     blogCommentsForView.Add(new BlogComment
                     {
+                        Id = blogComment.Id,                 
                         Description = blogComment.Description,
                         DateAdded = blogComment.DateAdded,
-                        Username = (await userManager.FindByIdAsync(blogComment.UserId.ToString())).UserName
+                        Username = name
                     });
                 }
+
 
                 blogDetailsViewModel = new BlogDetailsViewModel
                 {
@@ -114,5 +127,19 @@ namespace DevHive.Web.Controllers
 
             return View();
         }
+
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteComment(Guid commentId, string urlHandle)
+        {
+            await blogPostCommentRepository.DeleteAsync(commentId);
+
+            return RedirectToAction("Index", "Blogs", new { urlHandle });
+        }
+
+
+
     }
 }

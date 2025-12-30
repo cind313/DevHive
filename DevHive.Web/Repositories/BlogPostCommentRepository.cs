@@ -27,5 +27,20 @@ namespace DevHive.Web.Repositories
             return await devHiveDbContext.BlogPostComment.Where(x => x.BlogPostId == blogPostId)
                 .ToListAsync();
         }
+
+        public async Task<BlogPostComment?> DeleteAsync(Guid id)
+        {
+            var existing = await devHiveDbContext.BlogPostComment.FindAsync(id);
+
+            if (existing == null)
+            {
+                return null;
+            }
+
+            devHiveDbContext.BlogPostComment.Remove(existing);
+            await devHiveDbContext.SaveChangesAsync();
+            return existing;
+        }
+
     }
 }

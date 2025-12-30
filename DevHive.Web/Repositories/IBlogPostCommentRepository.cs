@@ -7,5 +7,6 @@ namespace DevHive.Web.Repositories
         Task<BlogPostComment> AddAsync(BlogPostComment blogPostComment);
 
         Task<IEnumerable<BlogPostComment>> GetCommentsByBlogIdAsync(Guid blogPostId);
+        Task<BlogPostComment?> DeleteAsync(Guid Id);
     }
 }
