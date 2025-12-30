@@ -121,8 +121,8 @@ namespace DevHive.Web.Controllers
                 };
 
                 await blogPostCommentRepository.AddAsync(domainModel);
-                return RedirectToAction("Index", "Blogs",
-                    new { urlHandle = blogDetailsViewModel.UrlHandle });
+                var redirectUrl = Url.Action("Index", "Blogs", new { urlHandle = blogDetailsViewModel.UrlHandle }) + "#comments";
+                return Redirect(redirectUrl);
             }
 
             return View();
@@ -136,7 +136,9 @@ namespace DevHive.Web.Controllers
         {
             await blogPostCommentRepository.DeleteAsync(commentId);
 
-            return RedirectToAction("Index", "Blogs", new { urlHandle });
+            var redirectUrl = Url.Action("Index", "Blogs", new { urlHandle }) + "#comments";
+            return Redirect(redirectUrl);
+
         }
 
 

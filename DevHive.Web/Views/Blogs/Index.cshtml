@@ -67,7 +67,7 @@
                         </div>
 
 
-                        <div class="card">
+                        <div class="card" id="comments">
                             <div class="card-header">
                                 <h5>Comments</h5>
 
@@ -92,7 +92,7 @@
                                     @foreach (var comment in Model.Comments)
                                     {
                                         <div class="card mb-3">
-                                            <div id="comments" class="card-body">
+                                            <div class="card-body">
                                                 <div>
                                                     @comment.Description
                                                 </div>
